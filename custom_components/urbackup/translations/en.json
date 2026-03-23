@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to UrBackup Server",
+        "data": {
+          "url": "Server URL",
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "url": "e.g., http://locutus:55414",
+          "username": "Leave blank for anonymous access",
+          "password": "Leave blank for anonymous access"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to UrBackup server",
+      "invalid_auth": "Invalid authentication credentials",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This UrBackup server is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_file_backup": {
+        "name": "Last file backup"
+      },
+      "last_image_backup": {
+        "name": "Last image backup"
+      },
+      "storage_used": {
+        "name": "Storage used"
+      },
+      "backup_activity": {
+        "name": "Backup activity"
+      },
+      "backup_progress": {
+        "name": "Backup progress"
+      },
+      "last_activity": {
+        "name": "Last activity"
+      }
+    },
+    "binary_sensor": {
+      "online": {
+        "name": "Online"
+      },
+      "file_backup_status": {
+        "name": "File backup problem"
+      },
+      "image_backup_status": {
+        "name": "Image backup problem"
+      }
+    }
+  }
+}

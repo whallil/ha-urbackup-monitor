@@ -1,0 +1,30 @@
+start_backup:
+  name: Start backup
+  description: Trigger a backup for a specific UrBackup client.
+  fields:
+    client_id:
+      name: Client ID
+      description: The UrBackup client ID to back up.
+      required: true
+      example: 4
+      selector:
+        number:
+          min: 1
+          mode: box
+    backup_type:
+      name: Backup type
+      description: The type of backup to start.
+      required: false
+      default: incr_file
+      example: incr_file
+      selector:
+        select:
+          options:
+            - label: Incremental file
+              value: incr_file
+            - label: Full file
+              value: full_file
+            - label: Incremental image
+              value: incr_image
+            - label: Full image
+              value: full_image
