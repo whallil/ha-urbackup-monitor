@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import binascii
 import hashlib
 import logging
 from typing import Any
@@ -80,19 +81,21 @@ class UrBackupApiClient:
         if not ses or salt_result.get("error") == 1:
             raise UrBackupAuthenticationError("Failed to get authentication salt")
 
-        # Hash password
-        pw_hash = hashlib.md5(
+        # Hash password: MD5 of (salt + password) as raw bytes
+        pw_hash_bin = hashlib.md5(
             (salt + self._password).encode()
-        ).hexdigest()
+        ).digest()
+        pw_hash = binascii.hexlify(pw_hash_bin).decode()
 
         if pbkdf2_rounds > 0:
-            pw_hash = hashlib.pbkdf2_hmac(
-                "sha256",
-                pw_hash.encode(),
-                salt.encode(),
-                pbkdf2_rounds,
-                dklen=32,
-            ).hex()
+            pw_hash = binascii.hexlify(
+                hashlib.pbkdf2_hmac(
+                    "sha256",
+                    pw_hash_bin,
+                    salt.encode(),
+                    pbkdf2_rounds,
+                )
+            ).decode()
 
         password_hash = hashlib.md5((rnd + pw_hash).encode()).hexdigest()
 
