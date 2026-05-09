@@ -37,12 +37,11 @@ class UrBackupConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             url = user_input[CONF_URL].rstrip("/")
 
-            if not url.startswith(("http://", "https://")):
-                url = f"http://{url}"
+            scheme_provided = url.startswith(("http://", "https://"))
+            if not scheme_provided:
+                url = f"http://{url}:{DEFAULT_PORT}"
 
             parsed = urlparse(url)
-            if not parsed.port:
-                url = f"{parsed.scheme}://{parsed.hostname}:{DEFAULT_PORT}"
 
             self._async_abort_entries_match({CONF_URL: url})
 
