@@ -59,6 +59,16 @@ class UrBackupApiClient:
             ) from err
         except aiohttp.ClientError as err:
             raise UrBackupApiError(f"API request failed: {err}") from err
+        except TimeoutError as err:
+            raise UrBackupConnectionError(
+                f"Timed out talking to UrBackup server at {self._base_url}"
+            ) from err
+        except ValueError as err:
+            # Something answered but it was not UrBackup JSON - usually the
+            # wrong port, where another web UI replies with HTML.
+            raise UrBackupApiError(
+                f"No UrBackup API at {self._base_url}: {err}"
+            ) from err
 
     async def login(self) -> bool:
         """Authenticate with the UrBackup server."""

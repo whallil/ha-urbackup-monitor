@@ -23,6 +23,29 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
+def _normalize_url(raw_url: str) -> str:
+    """Build a base URL out of whatever the user typed.
+
+    A bare host gets the UrBackup scheme and port ("nas" ->
+    "http://nas:55414"), while a host that already carries a port keeps it.
+    An explicit scheme is left untouched, so an UrBackup server behind a
+    reverse proxy on 80/443 still works.
+    """
+    url = raw_url.strip().rstrip("/")
+    if url.startswith(("http://", "https://")):
+        return url
+
+    url = f"http://{url}"
+    try:
+        has_port = urlparse(url).port is not None
+    except ValueError:
+        # Unparseable port - leave it alone and let the login attempt fail
+        # with a connection error rather than mangling the input further.
+        return url
+
+    return url if has_port else f"{url}:{DEFAULT_PORT}"
+
+
 class UrBackupConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for UrBackup."""
 
@@ -35,12 +58,7 @@ class UrBackupConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            url = user_input[CONF_URL].rstrip("/")
-
-            scheme_provided = url.startswith(("http://", "https://"))
-            if not scheme_provided:
-                url = f"http://{url}:{DEFAULT_PORT}"
-
+            url = _normalize_url(user_input[CONF_URL])
             parsed = urlparse(url)
 
             self._async_abort_entries_match({CONF_URL: url})

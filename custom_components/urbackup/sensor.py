@@ -34,10 +34,15 @@ def _timestamp_to_datetime(ts: int | str | None) -> datetime | None:
 
 
 def _bytes_to_gb(value: float | int | None) -> float | None:
-    """Convert bytes to gigabytes."""
+    """Convert bytes to gigabytes.
+
+    Decimal gigabytes, to match UnitOfInformation.GIGABYTES: dividing by
+    1024**3 here would report gibibytes under a GB label and skew every
+    unit conversion Home Assistant layers on top of the sensor.
+    """
     if value is None:
         return None
-    gb = round(max(0, value) / (1024**3), 2)
+    gb = round(max(0, value) / (1000**3), 2)
     return gb
 
 
